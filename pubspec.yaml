@@ -1,0 +1,36 @@
+name: bookz
+description: A new Flutter application.
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^0.1.2
+  font_awesome_flutter: ^8.8.1
+  epub_viewer: ^0.1.8+1
+  dio: ^3.0.10
+  permission_handler: ^5.0.1+1
+  path_provider: ^1.6.18
+  flutter_svg: ^0.19.0
+  http: ^0.12.2
+  flutter_rating_bar: ^3.0.1+1
+  beauty_textfield: ^0.0.1
+  flutter_spinkit: "^4.1.2"
+  flutter_pdfview: ^1.0.3+5
+  step_progress_indicator: ^0.2.4+7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  # Your other dev_dependencies here
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
