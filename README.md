@@ -1,4 +1,4 @@
-# epub_viewer_project
+# ebook_viewer_project
 
 A new Flutter project.
 
