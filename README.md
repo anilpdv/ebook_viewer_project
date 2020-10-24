@@ -1,6 +1,6 @@
-# epub_viewer_project
+# ebook_viewer_project
 
-A new Flutter project.
+Ebook viewer for android, provide search and downloadable options. you can view and download pdf and epub files.
 
 ## Getting Started
 
