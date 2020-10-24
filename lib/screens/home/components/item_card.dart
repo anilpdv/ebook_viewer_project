@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../constants.dart';
 
@@ -9,8 +10,8 @@ class ItemCard extends StatelessWidget {
   const ItemCard({Key key, this.book, this.press}) : super(key: key);
 
   checkStringLenghth(String title) {
-    if (title != null && title.length > 40) {
-      return title.substring(0, 40) + '....';
+    if (title != null && title.length > 30) {
+      return title.substring(0, 30) + '....';
     }
     return title;
   }
@@ -30,28 +31,37 @@ class ItemCard extends StatelessWidget {
               color: Colors.black,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Image(
+            child: FadeInImage(
               image: NetworkImage(
                 'http://libgen.rs/covers/${book["coverurl"]}',
               ),
+              placeholder: NetworkImage(kDefaultImage),
               fit: BoxFit.fill,
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: kDefaultPaddin / 4),
+            padding: const EdgeInsets.symmetric(
+                vertical: kDefaultPaddin / 2, horizontal: kDefaultPaddin / 2),
             child: Text(
               checkStringLenghth(book["title"]),
-              style: TextStyle(
-                letterSpacing: kLetterSpacing,
-                fontWeight: FontWeight.bold,
+              style: GoogleFonts.montserrat(
+                textStyle: TextStyle(
+                    letterSpacing: kLetterSpacing,
+                    fontWeight: FontWeight.bold,
+                    fontSize: kPrimaryFontSize),
               ),
             ),
           ),
-          Text(
-            checkStringLenghth('${book["author"]}'),
-            style: TextStyle(
-              color: kTextLightColor,
-              letterSpacing: kLetterSpacing,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: kDefaultPaddin / 2),
+            child: Text(
+              checkStringLenghth('${book["author"]}'),
+              style: GoogleFonts.lato(
+                textStyle: TextStyle(
+                    color: kTextLightColor,
+                    letterSpacing: kLetterSpacing,
+                    fontSize: kSecondaryFontSize),
+              ),
             ),
           )
         ],

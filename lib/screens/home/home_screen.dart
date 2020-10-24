@@ -1,3 +1,4 @@
+import 'package:bookz/screens/downloads/downloads_screen.dart';
 import 'package:bookz/screens/search/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -36,8 +37,23 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         SizedBox(
+          width: kDefaultPaddin / 5,
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.download_sharp,
+            color: kTextColor,
+          ),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DownloadBooksViewer(),
+            ),
+          ),
+        ),
+        SizedBox(
           width: kDefaultPaddin / 2,
-        )
+        ),
       ],
     );
   }

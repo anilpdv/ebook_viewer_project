@@ -12,6 +12,8 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   List books = [];
+  bool loader = false;
+
   @override
   void initState() {
     super.initState();
@@ -20,8 +22,20 @@ class _BodyState extends State<Body> {
 
   fetchData() async {
     BooksService booksService = BooksService();
-    var response = await booksService.getData(kLATEST_URL);
+    DateTime now = new DateTime.now();
+    DateTime before = now.subtract(Duration(days: 7));
+    String today = now.toString().split(' ')[0];
+    String fivedaysfromnow = before.toString().split(' ')[0];
+    var url = kLATEST_URL + '&timefirst=$fivedaysfromnow' + '&timelast=$today';
+
     setState(() {
+      loader = true;
+    });
+
+    var response = await booksService.getLatestData(url);
+
+    setState(() {
+      loader = false;
       books = response;
     });
   }
@@ -42,8 +56,16 @@ class _BodyState extends State<Body> {
           ),
         ),
         Categories(),
-        BooksGrid(books: books)
+        loader ? getLoader() : BooksGrid(books: books)
       ],
+    );
+  }
+
+  Expanded getLoader() {
+    return Expanded(
+      child: Center(
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 }

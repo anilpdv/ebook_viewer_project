@@ -3,7 +3,7 @@ import 'package:bookz/screens/home/components/book_grid.dart';
 import 'package:bookz/services/bookService.dart';
 import 'package:flutter/material.dart';
 import 'package:beauty_textfield/beauty_textfield.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SearchBar extends StatefulWidget {
   SearchBar({Key key}) : super(key: key);
@@ -15,6 +15,9 @@ class SearchBar extends StatefulWidget {
 class SearchBarState extends State<SearchBar> {
   List books = [];
   bool loader = false;
+  bool isError = false;
+  String errorString = '';
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -29,15 +32,21 @@ class SearchBarState extends State<SearchBar> {
     // : setting loading to true
     setState(() {
       loader = true;
+      isError = false;
+      errorString = "";
     });
 
     // creating url to request
     var url = kAPI_URL + kSearchApiUri + '?q=' + query;
     print(url);
     try {
-      response = await booksService.getData(url);
+      response = await booksService.getBooksData(url);
     } on Exception catch (e) {
-      print(e);
+      setState(() {
+        isError = true;
+        errorString = e.toString();
+      });
+      print('exception error $e');
     } catch (err) {
       print(err);
     }
@@ -52,6 +61,7 @@ class SearchBarState extends State<SearchBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -59,11 +69,18 @@ class SearchBarState extends State<SearchBar> {
             BeautyTextfield(
               width: double.maxFinite,
               height: 60,
+              autofocus: false,
               duration: Duration(milliseconds: 300),
               inputType: TextInputType.text,
-              prefixIcon: Icon(Icons.search),
-              suffixIcon: Icon(Icons.remove_red_eye),
-              placeholder: "Search...",
+              fontFamily: 'Lato',
+              textColor: Colors.grey[500],
+              fontWeight: FontWeight.bold,
+              obscureText: false,
+              prefixIcon: Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
+              placeholder: "search books here...",
               onTap: () {
                 print('Click');
               },
@@ -77,7 +94,8 @@ class SearchBarState extends State<SearchBar> {
             SizedBox(
               height: 20,
             ),
-            loader ? getLoader() : getBooksGrid()
+            loader ? getLoader() : getBooksGrid(),
+            isError ? onError(context) : Container()
           ],
         ),
       ),
@@ -90,11 +108,32 @@ class SearchBarState extends State<SearchBar> {
     );
   }
 
-  Center getLoader() {
-    return Center(
-      child: SpinKitThreeBounce(
-        color: Colors.blueAccent,
-        size: 25.0,
+  onError(BuildContext context) {
+    final snackBar = SnackBar(
+      duration: Duration(seconds: 10),
+      content: Text(errorString),
+      action: SnackBarAction(
+        label: 'Okay',
+        onPressed: () {
+          // Some code to undo the change.
+          setState(() {
+            isError = false;
+            errorString = '';
+          });
+        },
+      ),
+    );
+
+    // Find the Scaffold in the widget tree and use
+    // it to show a SnackBar.
+    _scaffoldKey.currentState.showSnackBar(snackBar);
+    return Container();
+  }
+
+  Expanded getLoader() {
+    return Expanded(
+      child: Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }

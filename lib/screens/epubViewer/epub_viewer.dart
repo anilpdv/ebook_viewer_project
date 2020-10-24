@@ -1,22 +1,36 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:bookz/constants.dart';
+import 'package:bookz/models/Books.dart';
+import 'package:bookz/screens/epubViewer/components/EpubViewer.dart';
+import 'package:bookz/screens/epubViewer/components/pdfViewer.dart';
+import 'package:bookz/services/bookSharedPreference.dart';
 import 'package:dio/dio.dart';
-import 'package:epub_viewer/epub_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 
 class EpubBookViewer extends StatefulWidget {
   final String url;
   final String bookName;
   final String extension;
-  EpubBookViewer(
-      {@required this.url, @required this.bookName, @required this.extension});
+  final String author;
+  final String img;
+  final String title;
+  final String id;
+
+  EpubBookViewer({
+    @required this.url,
+    @required this.bookName,
+    @required this.extension,
+    @required this.author,
+    @required this.img,
+    @required this.title,
+    @required this.id,
+  });
+
   @override
   _EpubBookViewerState createState() => _EpubBookViewerState();
 }
@@ -127,6 +141,7 @@ class _EpubBookViewerState extends State<EpubBookViewer> {
           });
           //Check if download is complete and close the alert dialog
           if (receivedBytes == totalBytes) {
+            setBooksInSharedPreference();
             setState(() {
               loading = false;
             });
@@ -139,151 +154,48 @@ class _EpubBookViewerState extends State<EpubBookViewer> {
       });
     }
   }
-}
 
-class InvokeEpup extends StatefulWidget {
-  const InvokeEpup({
-    Key key,
-    @required this.bookPath,
-  }) : super(key: key);
+  setBooksInSharedPreference() async {
+    var store = StoreBooksData();
+    bool isDownloadsExist = await store.isKeyExists('downloads');
+    List<Books> books = [];
+    String storedEncodedData;
+    String encodedBooksData;
 
-  final String bookPath;
+    // check if the key exits in store
+    if (isDownloadsExist) {
+      storedEncodedData = await store.getStringValuesSF('downloads');
+      books = Books.decodeBooks(storedEncodedData);
 
-  @override
-  _InvokeEpupState createState() => _InvokeEpupState();
-}
+      books.add(
+        Books(
+          author: widget.author,
+          title: widget.title,
+          img: widget.img,
+          path: bookPath,
+          bookName: widget.bookName,
+          url: widget.url,
+          extension: widget.extension,
+          id: widget.id,
+        ),
+      );
+    } else {
+      books.add(
+        Books(
+          author: widget.author,
+          title: widget.title,
+          img: widget.img,
+          path: bookPath,
+          bookName: widget.bookName,
+          url: widget.url,
+          extension: widget.extension,
+          id: widget.id,
+        ),
+      );
+    }
 
-class _InvokeEpupState extends State<InvokeEpup> {
-  @override
-  void initState() {
-    super.initState();
-
-    Future.delayed(Duration.zero, this.invokeEpub);
-  }
-
-  invokeEpub() {
-    EpubViewer.setConfig(
-      themeColor: Theme.of(context).primaryColor,
-      identifier: "iosBook",
-      scrollDirection: EpubScrollDirection.ALLDIRECTIONS,
-      allowSharing: true,
-      enableTts: true,
-    );
-    EpubViewer.open(
-      widget.bookPath,
-    );
-
-    // get current locator
-    EpubViewer.locatorStream.listen((locator) {
-      print('LOCATOR: ${EpubLocator.fromJson(jsonDecode(locator))}');
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
-class PDFScreen extends StatefulWidget {
-  final String path;
-  final String bookName;
-
-  PDFScreen({Key key, this.path, this.bookName}) : super(key: key);
-
-  _PDFScreenState createState() => _PDFScreenState();
-}
-
-class _PDFScreenState extends State<PDFScreen> with WidgetsBindingObserver {
-  final Completer<PDFViewController> _controller =
-      Completer<PDFViewController>();
-  int pages = 0;
-  int currentPage = 0;
-  bool isReady = false;
-  String errorMessage = '';
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: Text(widget.bookName),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.share),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: Stack(
-        children: <Widget>[
-          PDFView(
-            filePath: widget.path,
-            enableSwipe: true,
-            autoSpacing: false,
-            pageFling: true,
-            pageSnap: true,
-            defaultPage: currentPage,
-            fitPolicy: FitPolicy.BOTH,
-            preventLinkNavigation:
-                false, // if set to true the link is handled in flutter
-            onRender: (_pages) {
-              setState(() {
-                pages = _pages;
-                isReady = true;
-              });
-            },
-            onError: (error) {
-              setState(() {
-                errorMessage = error.toString();
-              });
-              print(error.toString());
-            },
-            onPageError: (page, error) {
-              setState(() {
-                errorMessage = '$page: ${error.toString()}';
-              });
-              print('$page: ${error.toString()}');
-            },
-            onViewCreated: (PDFViewController pdfViewController) {
-              _controller.complete(pdfViewController);
-            },
-            onLinkHandler: (String uri) {
-              print('goto uri: $uri');
-            },
-            onPageChanged: (int page, int total) {
-              print('page change: $page/$total');
-              setState(() {
-                currentPage = page;
-              });
-            },
-          ),
-          errorMessage.isEmpty
-              ? !isReady
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : Container()
-              : Center(
-                  child: Text(errorMessage),
-                )
-        ],
-      ),
-      floatingActionButton: FutureBuilder<PDFViewController>(
-        future: _controller.future,
-        builder: (context, AsyncSnapshot<PDFViewController> snapshot) {
-          if (snapshot.hasData) {
-            return FloatingActionButton.extended(
-              label: Text("Go to ${pages ~/ 2}"),
-              onPressed: () async {
-                await snapshot.data.setPage(pages ~/ 2);
-              },
-            );
-          }
-
-          return Container();
-        },
-      ),
-    );
+    // storing updated data
+    encodedBooksData = Books.encodeBooks(books);
+    store.addStringToSF('downloads', encodedBooksData);
   }
 }
