@@ -3,7 +3,6 @@ import 'package:bookz/screens/home/components/book_grid.dart';
 import 'package:bookz/services/bookService.dart';
 import 'package:flutter/material.dart';
 import 'package:beauty_textfield/beauty_textfield.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class SearchBar extends StatefulWidget {
   SearchBar({Key key}) : super(key: key);
@@ -36,11 +35,8 @@ class SearchBarState extends State<SearchBar> {
       errorString = "";
     });
 
-    // creating url to request
-    var url = kAPI_URL + kSearchApiUri + '?q=' + query;
-    print(url);
     try {
-      response = await booksService.getBooksData(url);
+      response = await booksService.getBooksData(query);
     } on Exception catch (e) {
       setState(() {
         isError = true;

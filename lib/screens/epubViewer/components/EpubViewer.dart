@@ -19,22 +19,26 @@ class _InvokeEpupState extends State<InvokeEpup> {
   @override
   void initState() {
     super.initState();
+    print('initializing invokeepub');
 
     Future.delayed(Duration.zero, this.invokeEpub);
   }
 
   invokeEpub() {
-    EpubViewer.setConfig(
-      themeColor: Theme.of(context).primaryColor,
-      identifier: "iosBook",
-      scrollDirection: EpubScrollDirection.ALLDIRECTIONS,
-      allowSharing: true,
-      enableTts: true,
-    );
-    EpubViewer.open(
-      widget.bookPath,
-    );
-
+    try {
+      EpubViewer.setConfig(
+        themeColor: Theme.of(context).primaryColor,
+        identifier: "book",
+        scrollDirection: EpubScrollDirection.ALLDIRECTIONS,
+        allowSharing: true,
+        enableTts: true,
+      );
+      EpubViewer.open(
+        widget.bookPath,
+      );
+    } catch (err) {
+      print(err);
+    }
     // get current locator
     EpubViewer.locatorStream.listen((locator) {
       print('LOCATOR: ${EpubLocator.fromJson(jsonDecode(locator))}');

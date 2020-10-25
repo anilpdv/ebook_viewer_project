@@ -19,3 +19,5 @@ const kConverUrl = 'http://libgen.rs/covers/';
 
 const kDefaultImage =
     'https://www.katjakettu.com/wp-content/uploads/placeholder-book-300x400.jpg';
+
+var kRegex = new RegExp(r'bgcolor.+<td>(\d+)<\/td>');

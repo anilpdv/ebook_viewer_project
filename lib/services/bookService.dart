@@ -19,8 +19,8 @@ class BooksService {
     }
   }
 
-  Future<List<dynamic>> getBooksData(String url) async {
-    var reqData = await getData(url);
+  Future<List<dynamic>> getBooksData(String query) async {
+    var reqData = await getInitialReqIds(query);
     var reqUrl = reqData['reqUrl'].toString();
     http.Response response = await http.get(reqUrl);
     if (response.statusCode == 200) {
@@ -58,6 +58,7 @@ class BooksService {
   Future<dynamic> getLatestData(String url) async {
     http.Response downloadResponse = await http.get(kAPI_URL + kDownloadUri);
     http.Response response = await http.get(url);
+
     if (response.statusCode == 200) {
       print(response.statusCode);
       print(response.body);
@@ -69,5 +70,47 @@ class BooksService {
       // then throw an exception.
       throw Exception('Failed to load Books, Try again!.');
     }
+  }
+
+  Future<dynamic> getInitialReqIds(String query) async {
+    var urlData;
+    var niceQuery;
+    var finalLink;
+    List refinedData = [];
+    Map<String, dynamic> reqData = {'durl': '', 'reqUrl': ''};
+
+    http.Response downloadResponse = await http.get(kAPI_URL + kDownloadUri);
+
+    if (downloadResponse.statusCode == 200) {
+      urlData = json.decode(downloadResponse.body);
+    } else {
+      throw Exception('Failed to load urls, internal error');
+    }
+
+    if (downloadResponse.statusCode == 200) {
+      niceQuery = query.split(' ').join('+');
+      finalLink = urlData['searchUrl'] + niceQuery + '&page=1';
+    }
+
+    try {
+      http.Response response = await http.get(finalLink);
+
+      var fetchedData = kRegex.allMatches(response.body);
+      for (var match in fetchedData) {
+        refinedData.add(match[1]);
+      }
+    } catch (err) {
+      throw Exception(
+        'Books doesn\'t exist on this query, try different query.',
+      );
+    }
+
+    if (refinedData.length > 0) {
+      var joinedIds = refinedData.join(',');
+      reqData['durl'] = urlData['durl'];
+      reqData['reqUrl'] = urlData['dataUrl'] + joinedIds;
+    }
+
+    return reqData;
   }
 }

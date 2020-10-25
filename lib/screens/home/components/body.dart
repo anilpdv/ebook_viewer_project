@@ -13,6 +13,8 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   List books = [];
   bool loader = false;
+  bool isError = false;
+  String errorString = '';
 
   @override
   void initState() {
@@ -40,22 +42,52 @@ class _BodyState extends State<Body> {
     });
   }
 
+  fetchDataByQuery(String query) async {
+    BooksService booksService = BooksService();
+    var response;
+
+    // : setting loading to true
+    setState(() {
+      loader = true;
+      isError = false;
+      errorString = "";
+    });
+
+    try {
+      response = await booksService.getBooksData(query);
+    } on Exception catch (e) {
+      setState(() {
+        isError = true;
+        errorString = e.toString();
+      });
+      print('exception error $e');
+    } catch (err) {
+      print(err);
+    }
+
+    // setting books response to state
+    setState(() {
+      loader = false;
+      books = response;
+    });
+  }
+
+  fetchDataByCategory(String category) {
+    if (category == 'Latest') {
+      fetchData();
+    } else {
+      fetchDataByQuery(category);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: kDefaultPaddin),
-          child: Text(
-            "Books",
-            style: Theme.of(context)
-                .textTheme
-                .headline5
-                .copyWith(fontWeight: FontWeight.bold),
-          ),
+        Categories(
+          getBooks: fetchDataByCategory,
         ),
-        Categories(),
         loader ? getLoader() : BooksGrid(books: books)
       ],
     );

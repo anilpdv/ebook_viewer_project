@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:bookz/constants.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Categories extends StatefulWidget {
-  Categories({Key key}) : super(key: key);
+  final Function getBooks;
+  Categories({Key key, this.getBooks}) : super(key: key);
 
   @override
   _CategoriesState createState() => _CategoriesState();
@@ -12,11 +14,14 @@ class Categories extends StatefulWidget {
 class _CategoriesState extends State<Categories> {
   List<String> categories = [
     "Latest",
-    "Top",
     "Literature",
     "Philosophy",
-    "Comedy"
+    "Comedy",
+    "Biology",
+    "Programming",
+    "Science"
   ];
+
   int selectedIndex = 0;
 
   @override
@@ -39,6 +44,7 @@ class _CategoriesState extends State<Categories> {
       onTap: () {
         setState(() {
           selectedIndex = index;
+          widget.getBooks(categories[index]);
         });
       },
       child: Padding(
@@ -48,9 +54,12 @@ class _CategoriesState extends State<Categories> {
           children: [
             Text(
               categories[index],
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: selectedIndex == index ? kTextColor : kTextLightColor,
+              style: GoogleFonts.lato(
+                textStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: selectedIndex == index ? kTextColor : kTextLightColor,
+                  letterSpacing: kLetterSpacing,
+                ),
               ),
             ),
             Container(

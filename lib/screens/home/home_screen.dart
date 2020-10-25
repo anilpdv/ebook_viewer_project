@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:bookz/screens/home/components/body.dart';
 import 'package:bookz/constants.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -17,6 +18,13 @@ class HomeScreen extends StatelessWidget {
 
   AppBar buildAppBar(context) {
     return AppBar(
+      title: Text(
+        'Books',
+        style: GoogleFonts.montserrat(
+          textStyle:
+              TextStyle(color: kTextColor, letterSpacing: kLetterSpacing),
+        ),
+      ),
       backgroundColor: Colors.white,
       elevation: 0,
       leading: IconButton(

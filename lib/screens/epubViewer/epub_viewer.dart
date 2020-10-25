@@ -133,7 +133,7 @@ class _EpubBookViewerState extends State<EpubBookViewer> {
         widget.url,
         path,
         deleteOnError: true,
-        onReceiveProgress: (receivedBytes, totalBytes) {
+        onReceiveProgress: (receivedBytes, totalBytes) async {
           // setting percentage
           setState(() {
             currentStep = int.parse(
@@ -141,7 +141,7 @@ class _EpubBookViewerState extends State<EpubBookViewer> {
           });
           //Check if download is complete and close the alert dialog
           if (receivedBytes == totalBytes) {
-            setBooksInSharedPreference();
+            await setBooksInSharedPreference();
             setState(() {
               loading = false;
             });

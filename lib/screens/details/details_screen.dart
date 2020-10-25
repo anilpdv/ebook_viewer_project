@@ -24,6 +24,13 @@ class DetailsScreen extends StatelessWidget {
 
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
+      title: Text(
+        'Details',
+        style: GoogleFonts.montserrat(
+          textStyle:
+              TextStyle(color: kTextColor, letterSpacing: kLetterSpacing),
+        ),
+      ),
       backgroundColor: Colors.white,
       elevation: 0,
       leading: IconButton(
