@@ -1,4 +1,3 @@
-import 'package:bookz/constants.dart';
 import 'package:bookz/screens/home/components/book_grid.dart';
 import 'package:bookz/services/bookService.dart';
 import 'package:flutter/material.dart';

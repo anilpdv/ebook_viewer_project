@@ -3,10 +3,10 @@ import 'dart:io';
 
 import 'package:bookz/constants.dart';
 import 'package:bookz/models/Books.dart';
-import 'package:bookz/screens/epubViewer/components/EpubViewer.dart';
 import 'package:bookz/screens/epubViewer/components/pdfViewer.dart';
 import 'package:bookz/services/bookSharedPreference.dart';
 import 'package:dio/dio.dart';
+import 'package:epub_viewer/epub_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -91,13 +91,27 @@ class _EpubBookViewerState extends State<EpubBookViewer> {
               ),
             )
           : widget.extension == 'epub'
-              ? InvokeEpup(bookPath: bookPath)
+              ? invokeEpub()
               : widget.extension == 'pdf'
                   ? PDFScreen(
                       path: bookPath,
                       bookName: widget.bookName,
                     )
-                  : Container(),
+                  : Offstage(),
+    );
+  }
+
+  invokeEpub() {
+    EpubViewer.setConfig(
+      themeColor: Theme.of(context).accentColor,
+      identifier: "androidBook",
+      scrollDirection: EpubScrollDirection.VERTICAL,
+      allowSharing: true,
+      enableTts: false,
+    );
+
+    EpubViewer.open(
+      bookPath,
     );
   }
 
