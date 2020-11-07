@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:bookz/constants.dart';
+import 'package:bookz/models/BookRatings.dart';
 import 'package:bookz/utils/helper.dart';
 import 'package:http/http.dart' as http;
 
@@ -8,8 +9,6 @@ class BooksService {
   Future<dynamic> getData(String url) async {
     http.Response response = await http.get(url);
     if (response.statusCode == 200) {
-      print(response.statusCode);
-      print(response.body);
       var reqData = json.decode(response.body);
       return reqData;
     } else {
@@ -24,8 +23,6 @@ class BooksService {
     var reqUrl = reqData['reqUrl'].toString();
     http.Response response = await http.get(reqUrl);
     if (response.statusCode == 200) {
-      print(response.statusCode);
-      print(response.body);
       List<dynamic> books = json.decode(response.body);
 
       return transformBooksList(books, reqData);
@@ -60,8 +57,6 @@ class BooksService {
     http.Response response = await http.get(url);
 
     if (response.statusCode == 200) {
-      print(response.statusCode);
-      print(response.body);
       var reqData = json.decode(downloadResponse.body);
       var books = json.decode(response.body);
       return transformBooksList(books, reqData);
@@ -69,6 +64,22 @@ class BooksService {
       // If the server did not return a 200 OK response,
       // then throw an exception.
       throw Exception('Failed to load Books, Try again!.');
+    }
+  }
+
+  Future<BookRatings> getBookRatings(String isbn) async {
+    try {
+      http.Response response = await http.get(kRatingsApi + isbn);
+      if (response.statusCode == 200) {
+        var reqData = json.decode(response.body);
+        BookRatings bookRatings = BookRatings.fromJson(reqData);
+        print(bookRatings.books[0].averageRating);
+        return bookRatings;
+      } else {
+        throw Exception('Failed to load Book ratings');
+      }
+    } catch (err) {
+      throw Exception('Request failed for getting books ratings');
     }
   }
 
@@ -95,6 +106,7 @@ class BooksService {
     try {
       http.Response response = await http.get(finalLink);
 
+      // : getting all matches from the regex
       var fetchedData = kRegex.allMatches(response.body);
       for (var match in fetchedData) {
         refinedData.add(match[1]);

@@ -6,7 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 class DetailsComponent extends StatelessWidget {
   final book;
-  const DetailsComponent({Key key, this.book}) : super(key: key);
+  final rating;
+  const DetailsComponent({Key key, this.book, this.rating}) : super(key: key);
 
   listIncludes(String ext) {
     var acceptedExt = ['epub', 'pdf'];
@@ -59,16 +60,30 @@ class DetailsComponent extends StatelessWidget {
                 SizedBox(
                   height: 10,
                 ),
-                RatingBarIndicator(
-                  itemPadding: EdgeInsets.all(0.0),
-                  itemSize: 20.0,
-                  rating: 5.0,
-                  itemBuilder: (context, index) {
-                    return Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                    );
-                  },
+                Row(
+                  children: [
+                    RatingBarIndicator(
+                      itemPadding: EdgeInsets.all(0.0),
+                      itemSize: 20.0,
+                      rating: double.parse(rating != null ? rating : '0.0'),
+                      itemBuilder: (context, index) {
+                        return Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        );
+                      },
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      rating != null ? rating : '',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: kTextLightColor,
+                      ),
+                    )
+                  ],
                 ),
                 SizedBox(
                   height: 15,

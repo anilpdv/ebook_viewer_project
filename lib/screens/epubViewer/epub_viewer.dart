@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:bookz/constants.dart';
 import 'package:bookz/models/Books.dart';
@@ -104,15 +105,20 @@ class _EpubBookViewerState extends State<EpubBookViewer> {
   invokeEpub() {
     EpubViewer.setConfig(
       themeColor: Theme.of(context).accentColor,
-      identifier: "androidBook",
+      identifier: "iosBook",
       scrollDirection: EpubScrollDirection.VERTICAL,
       allowSharing: true,
-      enableTts: false,
+      enableTts: true,
     );
 
     EpubViewer.open(
       bookPath,
     );
+
+    // get current locator
+    EpubViewer.locatorStream.listen((locator) {
+      print('LOCATOR: ${jsonDecode(locator)}');
+    });
   }
 
   Future downloadFile() async {
@@ -131,8 +137,6 @@ class _EpubBookViewerState extends State<EpubBookViewer> {
     Directory appDocDir = Platform.isAndroid
         ? await getExternalStorageDirectory()
         : await getApplicationDocumentsDirectory();
-    print(widget.bookName);
-    print(widget.url);
     String path =
         appDocDir.path + '/' + widget.bookName + '.' + widget.extension;
     setState(() {

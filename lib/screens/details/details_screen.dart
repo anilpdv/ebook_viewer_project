@@ -1,23 +1,60 @@
+import 'package:bookz/models/BookRatings.dart';
 import 'package:bookz/screens/details/components/DetailsComponent.dart';
 import 'package:bookz/screens/downloads/downloads_screen.dart';
 import 'package:bookz/screens/search/search_screen.dart';
+import 'package:bookz/services/bookService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:bookz/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class DetailsScreen extends StatelessWidget {
+class DetailsScreen extends StatefulWidget {
   final book;
 
   const DetailsScreen({Key key, this.book}) : super(key: key);
+
+  @override
+  _DetailsScreenState createState() => _DetailsScreenState();
+}
+
+class _DetailsScreenState extends State<DetailsScreen> {
+  var rating;
+  @override
+  void initState() {
+    super.initState();
+    setBookRating();
+  }
+
+  setBookRating() async {
+    String isbn = '';
+    BookRatings bookRatings;
+
+    if (widget.book['identifier'] != null) {
+      isbn = widget.book['identifier'].split(',')[0];
+      BooksService booksService = BooksService();
+
+      try {
+        bookRatings = await booksService.getBookRatings(isbn);
+        setState(() {
+          if (bookRatings?.books[0]?.averageRating != null) {
+            rating = bookRatings.books[0].averageRating;
+          }
+        });
+      } catch (err) {
+        print(err);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(widget.book['identifier'].split(',')[0]);
     return Scaffold(
       // each product have a color
       appBar: buildAppBar(context),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: DetailsComponent(book: book),
+        child: DetailsComponent(book: widget.book, rating: rating),
       ),
     );
   }
