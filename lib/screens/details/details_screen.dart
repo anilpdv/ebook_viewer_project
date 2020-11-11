@@ -19,6 +19,8 @@ class DetailsScreen extends StatefulWidget {
 
 class _DetailsScreenState extends State<DetailsScreen> {
   var rating;
+  bool loading = false;
+
   @override
   void initState() {
     super.initState();
@@ -32,7 +34,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
     if (widget.book['identifier'] != null) {
       isbn = widget.book['identifier'].split(',')[0];
       BooksService booksService = BooksService();
-
+      setState(() {
+        loading = true;
+      });
       try {
         bookRatings = await booksService.getBookRatings(isbn);
         setState(() {
@@ -41,9 +45,16 @@ class _DetailsScreenState extends State<DetailsScreen> {
           }
         });
       } catch (err) {
+        setState(() {
+          loading = false;
+        });
         print(err);
       }
     }
+
+    setState(() {
+      loading = false;
+    });
   }
 
   @override
@@ -52,9 +63,30 @@ class _DetailsScreenState extends State<DetailsScreen> {
     return Scaffold(
       // each product have a color
       appBar: buildAppBar(context),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: DetailsComponent(book: widget.book, rating: rating),
+      body: getBody(),
+    );
+  }
+
+  Column getBody() {
+    return Column(
+      children: [
+        !loading
+            ? Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DetailsComponent(book: widget.book, rating: rating),
+                ),
+              )
+            : Container(),
+        loading ? getLoader() : Container()
+      ],
+    );
+  }
+
+  Expanded getLoader() {
+    return Expanded(
+      child: Center(
+        child: CircularProgressIndicator(),
       ),
     );
   }

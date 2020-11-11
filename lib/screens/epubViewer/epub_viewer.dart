@@ -21,16 +21,17 @@ class EpubBookViewer extends StatefulWidget {
   final String img;
   final String title;
   final String id;
+  final String locator;
 
-  EpubBookViewer({
-    @required this.url,
-    @required this.bookName,
-    @required this.extension,
-    @required this.author,
-    @required this.img,
-    @required this.title,
-    @required this.id,
-  });
+  EpubBookViewer(
+      {@required this.url,
+      @required this.bookName,
+      @required this.extension,
+      @required this.author,
+      @required this.img,
+      @required this.title,
+      @required this.id,
+      @required this.locator});
 
   @override
   _EpubBookViewerState createState() => _EpubBookViewerState();
@@ -41,11 +42,14 @@ class _EpubBookViewerState extends State<EpubBookViewer> {
   int currentStep = 0;
   String bookPath = '';
   Dio dio = new Dio();
+  bool downloaded = false;
 
   @override
   void initState() {
     super.initState();
     download();
+    var store = StoreBooksData();
+    store.removeValue('downloads');
   }
 
   download() async {
@@ -103,6 +107,33 @@ class _EpubBookViewerState extends State<EpubBookViewer> {
   }
 
   invokeEpub() {
+    if (downloaded == true) {
+      openBook();
+    }
+  }
+
+  openBook() async {
+    var store = StoreBooksData();
+    var storedEncodedData = await store.getStringValuesSF('downloads');
+    var books;
+    var location;
+
+    if (storedEncodedData != null) {
+      books = Books.decodeBooks(storedEncodedData);
+
+      for (var book in books) {
+        if (book.id == widget.id) {
+          if (book.locator != null) {
+            location = json.decode(book.locator);
+          }
+          break;
+        }
+      }
+    }
+
+    print('priting the locator ...............');
+    print(location);
+
     EpubViewer.setConfig(
       themeColor: Theme.of(context).accentColor,
       identifier: "iosBook",
@@ -111,13 +142,23 @@ class _EpubBookViewerState extends State<EpubBookViewer> {
       enableTts: true,
     );
 
-    EpubViewer.open(
-      bookPath,
-    );
+    EpubViewer.open(bookPath,
+        lastLocation: location != null ? EpubLocator.fromJson(location) : null);
 
-    // get current locator
-    EpubViewer.locatorStream.listen((locator) {
-      print('LOCATOR: ${jsonDecode(locator)}');
+    EpubViewer.locatorStream.listen((locator) async {
+      if (storedEncodedData != null && books != null) {
+        for (var book in books) {
+          if (book.id == widget.id) {
+            book.locator = locator.toString();
+            break;
+          }
+        }
+
+        var encodedBooksData = Books.encodeBooks(books);
+        print('printing encoded books.......');
+        print(encodedBooksData);
+        await store.addStringToSF('downloads', encodedBooksData);
+      }
     });
   }
 
@@ -144,7 +185,7 @@ class _EpubBookViewerState extends State<EpubBookViewer> {
     });
     print(path);
     File file = File(path);
-
+    print(widget.url);
     if (!File(path).existsSync()) {
       await file.create();
       await dio.download(
@@ -162,6 +203,7 @@ class _EpubBookViewerState extends State<EpubBookViewer> {
             await setBooksInSharedPreference();
             setState(() {
               loading = false;
+              downloaded = true;
             });
           }
         },

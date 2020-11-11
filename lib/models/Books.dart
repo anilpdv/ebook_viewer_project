@@ -2,6 +2,7 @@ import 'dart:convert';
 
 class Books {
   final String id, filesize, author, title, img, extension, path, bookName, url;
+  String locator;
 
   Books({
     this.id,
@@ -13,7 +14,16 @@ class Books {
     this.path,
     this.bookName,
     this.url,
+    this.locator,
   });
+
+  String get locater_obj {
+    return locator;
+  }
+
+  set locator_obj(String location) {
+    this.locator = location;
+  }
 
   factory Books.fromJson(Map<String, dynamic> jsonData) {
     return Books(
@@ -26,6 +36,7 @@ class Books {
       path: jsonData['path'],
       bookName: jsonData['bookName'],
       url: jsonData['url'],
+      locator: jsonData['locator'],
     );
   }
 
@@ -38,7 +49,8 @@ class Books {
         'extension': book.extension,
         'path': book.path,
         'bookName': book.bookName,
-        'url': book.url
+        'url': book.url,
+        'locator': book.locator
       };
 
   static String encodeBooks(List<Books> books) => json.encode(

@@ -16,6 +16,10 @@ class DetailsComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return buildSingleChildScrollView(context);
+  }
+
+  SingleChildScrollView buildSingleChildScrollView(BuildContext context) {
     return SingleChildScrollView(
       child: Container(
         child: Column(
@@ -181,14 +185,14 @@ class DetailsComponent extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => EpubBookViewer(
-                                    url: book['download'],
-                                    bookName: encodedTitle,
-                                    extension: book['extension'],
-                                    author: book['author'],
-                                    title: book['title'],
-                                    img: kConverUrl + book['coverurl'],
-                                    id: book['id'],
-                                  ),
+                                      url: book['download'],
+                                      bookName: encodedTitle,
+                                      extension: book['extension'],
+                                      author: book['author'],
+                                      title: book['title'],
+                                      img: kConverUrl + book['coverurl'],
+                                      id: book['id'],
+                                      locator: book['locator']),
                                 ),
                               );
                             },
@@ -245,7 +249,13 @@ class DetailsComponent extends StatelessWidget {
             height: 15,
           ),
           Text(
-            book['descr'] != null ? book['descr'] : '',
+            book['descr'] != null
+                ? book['descr']
+                    // ignore: valid_regexps
+                    .replaceAll(r'<[^>]*>', " ")
+                    .replaceAll(r"\\s+", " ")
+                    .trim()
+                : '',
             style: GoogleFonts.openSans(
               textStyle: TextStyle(
                 fontSize: 16,
