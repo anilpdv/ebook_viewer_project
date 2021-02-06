@@ -82,12 +82,15 @@ class _DownloadBooksViewerState extends State<DownloadBooksViewer> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10.0),
-              child: FadeInImage.assetNetwork(
-                image: book.img,
-                placeholder: 'assets/images/placeholder-book.jpg',
-                width: 120,
-                height: 160,
-                fit: BoxFit.fitHeight,
+              child: Card(
+                elevation: 19.0,
+                child: FadeInImage.assetNetwork(
+                  image: book.img,
+                  placeholder: 'assets/images/placeholder-book.jpg',
+                  width: 120,
+                  height: 160,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),

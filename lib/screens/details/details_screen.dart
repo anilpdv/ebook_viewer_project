@@ -86,7 +86,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
   Expanded getLoader() {
     return Expanded(
       child: Center(
-        child: CircularProgressIndicator(),
+        child: CircularProgressIndicator(
+          backgroundColor: Colors.black,
+        ),
       ),
     );
   }

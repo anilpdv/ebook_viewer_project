@@ -1,7 +1,7 @@
 name: bookz
 description: A new Flutter application.
 
-version: 1.0.8+8
+version: 1.0.9+9
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -24,6 +24,7 @@ dependencies:
   step_progress_indicator: ^0.2.4+7
   shared_preferences: ^0.5.12+2
   google_fonts: ^1.1.1
+  objectdb: ^1.0.10+1
 
 dev_dependencies:
   flutter_test:

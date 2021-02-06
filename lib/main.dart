@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       themeMode: ThemeMode.light,
-      title: 'Flutter Demo',
+      title: 'Bookz',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         textTheme: Theme.of(context).textTheme.apply(bodyColor: kTextColor),

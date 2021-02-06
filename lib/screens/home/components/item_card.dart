@@ -23,20 +23,19 @@ class ItemCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Container(
-            height: 200,
-            width: 200,
-            padding: EdgeInsets.all(kDefaultPaddin),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: FadeInImage(
-              image: NetworkImage(
-                'http://libgen.rs/covers/${book["coverurl"]}',
+          Expanded(
+            child: Card(
+              elevation: 8.0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6.0),
+                child: FadeInImage(
+                  image: NetworkImage(
+                    'http://libgen.rs/covers/${book["coverurl"]}',
+                  ),
+                  placeholder: NetworkImage(kDefaultImage),
+                  fit: BoxFit.cover,
+                ),
               ),
-              placeholder: NetworkImage(kDefaultImage),
-              fit: BoxFit.fill,
             ),
           ),
           Padding(

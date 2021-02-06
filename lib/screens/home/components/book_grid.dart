@@ -22,7 +22,7 @@ class BooksGrid extends StatelessWidget {
             crossAxisCount: 2,
             mainAxisSpacing: kDefaultPaddin,
             crossAxisSpacing: kDefaultPaddin,
-            childAspectRatio: 0.55,
+            childAspectRatio: 0.5,
           ),
           itemBuilder: (context, index) => ItemCard(
             book: books[index],

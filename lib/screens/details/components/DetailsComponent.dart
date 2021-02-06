@@ -43,14 +43,17 @@ class DetailsComponent extends StatelessWidget {
             padding: EdgeInsets.symmetric(
               horizontal: 15.0,
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10.0),
-              child: FadeInImage.assetNetwork(
-                image: kConverUrl + book['coverurl'],
-                placeholder: 'assets/images/placeholder-book.jpg',
-                width: 200,
-                height: 250,
-                fit: BoxFit.fill,
+            child: Card(
+              elevation: 10.0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6.0),
+                child: FadeInImage.assetNetwork(
+                  image: kConverUrl + book['coverurl'],
+                  placeholder: 'assets/images/placeholder-book.jpg',
+                  width: 200,
+                  height: 250,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
@@ -141,9 +144,9 @@ class DetailsComponent extends StatelessWidget {
                     SizedBox(
                       height: 25,
                       child: FlatButton(
-                        color: Colors.blue[200],
+                        color: Colors.blue[50],
                         child: Text(
-                          book['extension'],
+                          book['extension'].toString().toUpperCase(),
                           style: GoogleFonts.lato(
                             textStyle: TextStyle(
                                 color: Colors.black45,

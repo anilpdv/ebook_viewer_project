@@ -27,12 +27,6 @@ class _PDFScreenState extends State<PDFScreen> with WidgetsBindingObserver {
       appBar: AppBar(
         backgroundColor: Colors.black,
         title: Text(widget.bookName),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.share),
-            onPressed: () {},
-          ),
-        ],
       ),
       body: Stack(
         children: <Widget>[
@@ -80,7 +74,9 @@ class _PDFScreenState extends State<PDFScreen> with WidgetsBindingObserver {
           errorMessage.isEmpty
               ? !isReady
                   ? Center(
-                      child: CircularProgressIndicator(),
+                      child: CircularProgressIndicator(
+                        backgroundColor: Colors.black,
+                      ),
                     )
                   : Container()
               : Center(
@@ -91,14 +87,14 @@ class _PDFScreenState extends State<PDFScreen> with WidgetsBindingObserver {
       floatingActionButton: FutureBuilder<PDFViewController>(
         future: _controller.future,
         builder: (context, AsyncSnapshot<PDFViewController> snapshot) {
-          if (snapshot.hasData) {
-            return FloatingActionButton.extended(
-              label: Text("Go to ${pages ~/ 2}"),
-              onPressed: () async {
-                await snapshot.data.setPage(pages ~/ 2);
-              },
-            );
-          }
+          // if (snapshot.hasData) {
+          //   return FloatingActionButton.extended(
+          //     label: Text("Go to ${pages ~/ 2}"),
+          //     onPressed: () async {
+          //       await snapshot.data.setPage(pages ~/ 2);
+          //     },
+          //   );
+          // }
 
           return Container();
         },

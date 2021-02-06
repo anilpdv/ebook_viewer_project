@@ -96,7 +96,9 @@ class _BodyState extends State<Body> {
   Expanded getLoader() {
     return Expanded(
       child: Center(
-        child: CircularProgressIndicator(),
+        child: CircularProgressIndicator(
+          backgroundColor: Colors.black,
+        ),
       ),
     );
   }

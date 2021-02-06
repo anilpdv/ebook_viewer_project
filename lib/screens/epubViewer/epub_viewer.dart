@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:bookz/constants.dart';
+import 'package:bookz/helpers/database_helper.dart';
 import 'package:bookz/models/Books.dart';
 import 'package:bookz/screens/epubViewer/components/pdfViewer.dart';
 import 'package:bookz/services/bookSharedPreference.dart';
@@ -31,7 +32,7 @@ class EpubBookViewer extends StatefulWidget {
       @required this.img,
       @required this.title,
       @required this.id,
-      @required this.locator});
+      this.locator});
 
   @override
   _EpubBookViewerState createState() => _EpubBookViewerState();
@@ -48,8 +49,6 @@ class _EpubBookViewerState extends State<EpubBookViewer> {
   void initState() {
     super.initState();
     download();
-    var store = StoreBooksData();
-    store.removeValue('downloads');
   }
 
   download() async {
@@ -113,26 +112,7 @@ class _EpubBookViewerState extends State<EpubBookViewer> {
   }
 
   openBook() async {
-    var store = StoreBooksData();
-    var storedEncodedData = await store.getStringValuesSF('downloads');
-    var books;
-    var location;
-
-    if (storedEncodedData != null) {
-      books = Books.decodeBooks(storedEncodedData);
-
-      for (var book in books) {
-        if (book.id == widget.id) {
-          if (book.locator != null) {
-            location = json.decode(book.locator);
-          }
-          break;
-        }
-      }
-    }
-
-    print('priting the locator ...............');
-    print(location);
+    List locators = await LocatorDB().getLocator(widget.id.toString());
 
     EpubViewer.setConfig(
       themeColor: Theme.of(context).accentColor,
@@ -143,22 +123,15 @@ class _EpubBookViewerState extends State<EpubBookViewer> {
     );
 
     EpubViewer.open(bookPath,
-        lastLocation: location != null ? EpubLocator.fromJson(location) : null);
+        lastLocation:
+            locators.isNotEmpty ? EpubLocator.fromJson(locators[0]) : null);
 
-    EpubViewer.locatorStream.listen((locator) async {
-      if (storedEncodedData != null && books != null) {
-        for (var book in books) {
-          if (book.id == widget.id) {
-            book.locator = locator.toString();
-            break;
-          }
-        }
-
-        var encodedBooksData = Books.encodeBooks(books);
-        print('printing encoded books.......');
-        print(encodedBooksData);
-        await store.addStringToSF('downloads', encodedBooksData);
-      }
+    EpubViewer.locatorStream.listen((event) async {
+      // Get locator here
+      Map json = jsonDecode(event);
+      json['bookId'] = widget.id.toString();
+      // Save locator to your database
+      await LocatorDB().update(json);
     });
   }
 
@@ -211,6 +184,7 @@ class _EpubBookViewerState extends State<EpubBookViewer> {
     } else {
       setState(() {
         loading = false;
+        downloaded = true;
       });
     }
   }
